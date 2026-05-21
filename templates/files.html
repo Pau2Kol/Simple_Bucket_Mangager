@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>  
+    <h1>Choisissez un fichier à Upload</h1>
+    <form action = "/files" method = "post" enctype="multipart/form-data"> 
+        <input type="file" name="file" />  
+        <input type = "submit" value="Upload">  
+    </form>  
+    <h1>Vos Fichiers :</h1>
+
+    <form action = "/files" method = "post">
+    <label for="Fichiers">Choisissez un fichier sur lequel effectuer une action:</label>
+    
+    <select id="fichier" name="fichier">
+        {% for item in files%}
+        <option value="{{item}}">{{item}}</option>
+        {% endfor %}
+        <input type = "submit" value="Supprimer">
+        <input type = "submit" value="Download">
+    </select>
+    </form>
+
+</body>
+<footer>
+<a><a href="/">Accueil</a>
+{% if variable is defined %}
+    <p>{{ variable }}</p>
+{% endif %}
+</footer>
+</html>

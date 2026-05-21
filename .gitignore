@@ -1,0 +1,5 @@
+.env
+aa.csv
+.aws
+__pycache__
+.tox

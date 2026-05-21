@@ -1,40 +1,27 @@
-import logging
-import boto3
-from botocore.exceptions import ClientError
-import os
+from flask import Flask, url_for , request, render_template
+import Bucket
 
-def upload_file(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
+app = Flask(__name__)
 
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
+@app.route("/")
+def index():
+    list =Bucket.list_buckets()
 
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = os.path.basename(file_name)
+    return render_template('index.html', buckets=list)
 
-    # Upload the file
-    s3_client = boto3.client('s3')
-    try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-    except ClientError as e:
-        logging.error(e)
-        return False
-    return True
+@app.route("/files", methods=['GET', 'POST'])
+def files():
+    a = Bucket.list_files("aa-ynov-intro")
 
-def download_file(file_name, bucket, output):
-    s3 = boto3.client("s3")
-    s3.download_file(bucket, file_name, output)
-
-def delete_file(file_name, bucket):
-    s3 = boto3.client('s3')
-    s3.delete_object(Bucket=bucket, Key=file_name)
-
-
-if __name__ == '__main__':
-    upload_file('test.txt', 'aa-ynov-intro')
-    download_file('test.txt', 'aa-ynov-intro', 'test2.txt')
-    delete_file('test.txt', 'aa-ynov-intro')
+    if request.method == 'POST':
+        p = "file/"+request.files['file'].filename
+        f = request.files['file']
+        f.save(p)
+        
+        if (Bucket.upload_file(f.filename, 'aa-ynov-intro') == True):
+            return render_template('files.html', files=a)
+        else:
+            return render_template('files.html', error="Le fichier n'a pas pu être upload", files=a)
+        
+    if request.method == 'GET':
+        return render_template('files.html', files=a)
