@@ -32,3 +32,9 @@ dans ~/.aws/config
 
 region 
 
+**4 - Lancer le projet **
+
+```
+flask --app main.py run
+```
+

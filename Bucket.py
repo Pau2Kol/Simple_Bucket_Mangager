@@ -69,7 +69,3 @@ def bucket_exists(bucket_name):
         return True
     except ClientError :
         return False
-
-if __name__ == "__main__":
-    list_files("aa-ynov-intro")
-    list_buckets()
