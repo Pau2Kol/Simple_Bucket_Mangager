@@ -1,10 +1,18 @@
-Bucket Manager très basique 
+Bucket Manager très basique :
+
+Possibilité de:
+
+- Lister ses buckets
+- Voir les fichiers présents sur ses buckets
+- Upload, Delete, Download des fichiers 
+
+**Setup**
 
 **1 - Faire un environnement virtuel**
 
 ```
 python3 -m venv .venv
-.venv/bun/activate
+.venv/bin/activate
 ```
 
 **2 - Installer les dépendances** 
