@@ -1,6 +1,19 @@
+Bucket Manager très basique 
+
 **1 - Faire un environnement virtuel**
 
-**2 - Definir les variables d'environnement**
+```
+python3 -m venv .venv
+.venv/bun/activate
+```
+
+**2 - Installer les dépendances** 
+
+```
+pip install -r requirements.txt
+```
+
+**3 - Definir les variables d'environnement**
 
 dans ~/.aws/credentials
 

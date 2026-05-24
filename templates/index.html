@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
     <title>Document</title>
+
+    <nav class="container">
+        <ul>
+            <li><strong>Gestionnaire S3</strong></li>
+        </ul>
+    </nav>
 </head>
 <body>
-    <h1>Choisissez un Buckets :</h1>
-    {% for item in buckets%}
-    <p>{{item}}</p>
-    {% endfor %}
+    <main class="container">
+        <h1>Choisissez un Bucket :</h1>
+        {% if buckets %}
+            {% for item in buckets %}
+                <a href="{{ url_for('files', bucket_name=item) }}">{{ item }}</a><br>
+            {% endfor %}
+        {% endif %}
+    </main>
 </body>
 
 <footer>  
-    <a><a href="/files">Fichiers</a>
+    
 </footer>
 </html>

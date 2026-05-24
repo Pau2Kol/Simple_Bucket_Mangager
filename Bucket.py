@@ -8,36 +8,43 @@ def list_buckets():
     s3 = boto3.resource('s3')
     for bucket in s3.buckets.all():
         list.append(bucket.name)
+        # print(list)
     return list
 
-def list_files(bucket):
-    list = []
+def list_files(bucket, search_prefix="", token=None):
     client = boto3.client("s3")
 
-    paginator = client.get_paginator("list_objects_v2")
-    for page in paginator.paginate(Bucket=bucket):
-        for each in page["Contents"]:
-            list.append(each["Key"])
-        return list
+    
+    kwargs = {
+        "Bucket": bucket,
+        "MaxKeys": 12
+    }
+    
+    if search_prefix:
+        kwargs["Prefix"] = search_prefix
+    if token:
+        kwargs["ContinuationToken"] = token
 
-
-
+    try:
+        response = client.list_objects_v2(**kwargs)
+        
+        file_list = []
+        if "Contents" in response:
+            for each in response["Contents"]:
+                file_list.append(each["Key"])
+        
+        next_token = response.get("NextContinuationToken", None)
+        
+        return file_list, next_token
+    except Exception as e:
+        import logging
+        logging.error(e)
+        return [], None
 
 def upload_file(file_name, bucket, object_name=None):
     p = "file/"+file_name
-    """Upload a file to an S3 bucket
-
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
-
-    # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = os.path.basename(p)
-
-    # Upload the file
     s3_client = boto3.client('s3')
     try:
         response = s3_client.upload_file(p, bucket, object_name)
@@ -55,5 +62,14 @@ def delete_file(file_name, bucket):
     s3 = boto3.client('s3')
     s3.delete_object(Bucket=bucket, Key=file_name)
 
+def bucket_exists(bucket_name):
+    client = boto3.client('s3')
+    try:
+        client.head_bucket(Bucket=bucket_name)
+        return True
+    except ClientError :
+        return False
+
 if __name__ == "__main__":
     list_files("aa-ynov-intro")
+    list_buckets()

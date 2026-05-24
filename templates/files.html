@@ -1,35 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>  
-    <h1>Choisissez un fichier à Upload</h1>
-    <form action = "/files" method = "post" enctype="multipart/form-data"> 
-        <input type="file" name="file" />  
-        <input type = "submit" value="Upload">  
-    </form>  
-    <h1>Vos Fichiers :</h1>
-
-    <form action = "/files" method = "post">
-    <label for="Fichiers">Choisissez un fichier sur lequel effectuer une action:</label>
     
-    <select id="fichier" name="fichier">
-        {% for item in files%}
-        <option value="{{item}}">{{item}}</option>
-        {% endfor %}
-        <input type = "submit" value="Supprimer">
-        <input type = "submit" value="Download">
-    </select>
-    </form>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    
+    <title>Gestion du Bucket</title>
+</head>
+<body>
+    
+    <nav class="container">
+        <ul>
 
+            <li><strong><a href="/" class="primary">Buckets</a></strong></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        {% if error is defined %}
+            <article>
+                <strong>Erreur :</strong> <mark>{{ error }}</mark>
+            </article>
+        {% endif %}
+
+        <div class="grid">
+            
+            <div>
+                <h5>Upload</h5>
+                <form id="uploadForm" action="{{ url_for('files', bucket_name=bucket_name) }}" method="post" enctype="multipart/form-data"> 
+                    <input id="upload_invisible" type="file" name="file" hidden onchange="verifierEtEnvoyer(this);" />
+                    <label for="upload_invisible" role="button">Sélectionner un fichier</label>
+                    <input type="hidden" name="choice" value="Upload">
+                </form>
+            </div>
+
+            <div>
+                <h5>Recherche</h5>
+                <form action="{{ url_for('files', bucket_name=bucket_name) }}" method="GET">
+                    <fieldset role="group">
+                        <input type="search" name="search" value="{{ search }}" placeholder="Rechercher un fichier...">
+                        <input type="submit" value="Filtrer">
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <h5>Fichiers présents dans le bucket</h5>
+
+        {% if files %}
+        <div class="overflow-auto">
+            <small>
+                <table class="striped">
+                    <thead>
+                        <tr>
+                            <th>Nom du fichier</th>
+                            <th>Actions</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in files %}
+                        <tr>
+                            <td>{{ item }}</td>
+                            <td>
+                                <form action="{{ url_for('files', bucket_name=bucket_name) }}" method="post">
+                                    <input type="hidden" name="fichier" value="{{ item }}">
+                                    <div role="group">
+                                        <button type="submit" name="choice" value="Download">Download</button>
+                                        <button class="secondary" type="submit" name="choice" value="Delete">Delete</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </small>
+        </div>
+        {% endif %}
+        <footer>
+            <div role="group">
+                
+                {% if request.args.get('token') %}
+                    <a href="javascript:history.back()" role="button" class="secondary">Page Précédente</a>
+                {% endif %}
+
+                {% if next_token %}
+                    <a href="{{ url_for('files', bucket_name=bucket_name, search=search, token=next_token) }}" role="button" class="contrast">Page Suivante</a>
+                {% endif %}
+                
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+    function verifierEtEnvoyer(fileInput) {
+        if (fileInput.files.length > 0) {
+            const tailleOctets = fileInput.files[0].size;
+            const limite = 16 * 1024 * 1024; // 16 Mo
+            
+            if (tailleOctets > limite) {
+                alert("Erreur : Fichier trop lourd (> 16 Mo).");
+                fileInput.value = ""; 
+            } else {
+                fileInput.form.submit();
+            }
+        }
+    }
+    </script>
 </body>
-<footer>
-<a><a href="/">Accueil</a>
-{% if variable is defined %}
-    <p>{{ variable }}</p>
-{% endif %}
-</footer>
 </html>
