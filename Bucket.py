@@ -41,17 +41,14 @@ def list_files(bucket, search_prefix="", token=None):
         logging.error(e)
         return [], None
 
-def upload_file(file_name, bucket, object_name=None):
-    p = "file/"+file_name
-    if object_name is None:
-        object_name = os.path.basename(p)
+def upload_file_memory(file_obj, bucket, object_name):
     s3_client = boto3.client('s3')
     try:
-        response = s3_client.upload_file(p, bucket, object_name)
+        
+        s3_client.upload_fileobj(file_obj, bucket, object_name)
     except ClientError as e:
         logging.error(e)
         return False
-    os.remove(p)
     return True
 
 def download_file(file_name, bucket, output):

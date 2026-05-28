@@ -44,7 +44,7 @@ def files(bucket_name):
 
                 f.save(p)
                 
-                if Bucket.upload_file(nom_propre, bucket_name):
+                if Bucket.upload_file_memory(f, bucket_name, nom_propre):
                     return redirect(url_for('files', bucket_name=bucket_name))
                 else:
                     return render_template('files.html', error="Le fichier n'a pas pu être upload", files=a, next_token=next_token, search=search_query, bucket_name=bucket_name)
